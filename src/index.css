@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #eef2ff;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+  /* prevent iOS bounce-scroll and accidental pull-to-refresh mid-journey */
+  overscroll-behavior-y: contain;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes pulseGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+.animate-fadeIn { animation: fadeIn 0.25s ease-out; }
+.animate-scaleIn { animation: scaleIn 0.15s ease-out; }
+.animate-pulseGlow { animation: pulseGlow 1.5s ease-in-out infinite; }
+.btn-press { @apply transition-transform active:scale-95; }

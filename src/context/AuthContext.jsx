@@ -1,0 +1,50 @@
+import { createContext, useContext, useEffect, useState } from 'react';
+import { apiClient } from '../lib/apiClient';
+import { queryClient } from '../lib/queryClient';
+
+const AuthContext = createContext(undefined);
+const TOKEN_KEY = 'driver_auth_token';
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) { setIsLoading(false); return; }
+
+    apiClient.get('/auth/me')
+      .then((res) => setUser(res.data.data ?? res.data))
+      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  async function login(email, password) {
+    queryClient.clear(); // wipe any cached data from a previous session/user before fetching new data
+    const res = await apiClient.post('/auth/login', { email, password });
+    localStorage.setItem(TOKEN_KEY, res.data.token);
+    setUser(res.data.user);
+  }
+
+  async function logout() {
+    try {
+      await apiClient.post('/auth/logout');
+    } finally {
+      localStorage.removeItem(TOKEN_KEY);
+      setUser(null);
+      queryClient.clear(); // don't leave this driver's data cached for whoever logs in next
+    }
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+}
