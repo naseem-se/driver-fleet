@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { apiClient } from './apiClient';
 import { enqueueAction } from './offlineQueue';
 
-const PING_INTERVAL_MS = 5 * 60 * 1000;
+const PING_INTERVAL_MS = 20 * 1000; // 20 seconds — was 5 minutes, far too sparse for real-time map tracking
 
 export function useJourneyTracking(journey) {
   const intervalRef = useRef(null);

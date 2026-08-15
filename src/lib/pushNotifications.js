@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 export async function registerPushNotifications() {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-    return;
+    return; // unsupported browser — this is an enhancement, not a hard requirement, fail silently
   }
 
   const permission = await Notification.requestPermission();
