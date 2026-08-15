@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Truck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { extractErrorMessage } from '../lib/apiClient';
@@ -49,6 +49,10 @@ export function LoginPage() {
           type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
           className="mb-6 w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-brand-500 focus:outline-none"
         />
+
+        <div className="mb-4 flex justify-end">
+          <Link to="/forgot-password" className="text-sm text-brand-600">Forgot password?</Link>
+        </div>
 
         <button
           type="submit" disabled={submitting}

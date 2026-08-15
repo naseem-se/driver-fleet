@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient } from '../lib/apiClient';
 import { queryClient } from '../lib/queryClient';
+import { registerPushNotifications } from '../lib/pushNotifications';
 
 const AuthContext = createContext(undefined);
 const TOKEN_KEY = 'driver_auth_token';
@@ -24,6 +25,7 @@ export function AuthProvider({ children }) {
     const res = await apiClient.post('/auth/login', { email, password });
     localStorage.setItem(TOKEN_KEY, res.data.token);
     setUser(res.data.user);
+    registerPushNotifications().catch(() => {});
   }
 
   async function logout() {

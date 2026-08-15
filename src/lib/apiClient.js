@@ -22,13 +22,21 @@ apiClient.interceptors.response.use(
   }
 );
 
-export function extractErrorMessage(error) {
-  if (axios.isAxiosError(error)) {
-    const errors = error.response?.data?.errors;
-    if (errors) return Object.values(errors)[0]?.[0] ?? error.response.data.message;
-    return error.response?.data?.message ?? 'Something went wrong.';
+export const extractValidationErrors = (error) => {
+  if (axios.isAxiosError(error) && error.response?.status === 422) {
+    const errors = error.response.data?.errors ?? {};
+    return Object.fromEntries(
+      Object.entries(errors).map(([field, messages]) => [field, messages[0]])
+    );
   }
-  return 'Something went wrong.';
+  return {};
+}
+
+export const extractErrorMessage = (error) => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.message ?? 'Something went wrong. Please try again.';
+  }
+  return 'Something went wrong. Please try again.';
 }
 
 export function extractValidationField(error, field) {

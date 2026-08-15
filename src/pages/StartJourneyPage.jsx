@@ -14,6 +14,8 @@ export function StartJourneyPage() {
   const vehicle = state?.vehicle;
   const navigate = useNavigate();
   const { getPosition } = useGeolocation();
+  const [locating, setLocating] = useState(false);
+  const [locationAccuracy, setLocationAccuracy] = useState(null);
   useWakeLock(true);
 
   const [startKm, setStartKm] = useState('');
@@ -38,8 +40,16 @@ export function StartJourneyPage() {
     setConflict(null);
 
     try {
-      const position = await getPosition().catch(() => null);
-      if (!position) throw new Error('Could not get your location. Please enable GPS and try again.');
+      setLocating(true);
+      let position;
+      try {
+        position = await getPosition();
+        setLocationAccuracy(position.accuracy);
+      } catch (locErr) {
+        throw new Error(locErr.message);
+      } finally {
+        setLocating(false);
+      }
 
       const fields = { vehicle_id: vehicle.id, start_km: startKm, lat: position.lat, lng: position.lng, photo };
 
@@ -138,9 +148,15 @@ export function StartJourneyPage() {
           <label className="block text-sm font-medium text-gray-700 mb-2">Odometer Photo</label>
           <CameraCapture label="Take odometer photo" onCapture={setPhoto} />
 
+           {locating && (
+            <div className="mt-4 flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700 animate-fadeIn">
+              <Loader size="sm" /> Getting an accurate location — hold still for a few seconds...
+            </div>
+          )}
+
           <button
             onClick={handleSubmit}
-            disabled={submitting || !photo}
+            disabled={submitting || !photo || locating}
             className="btn-press mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-4 text-base font-medium text-white disabled:opacity-50"
           >
             {submitting && <Loader size="sm" className="border-white/40 border-t-white" />}

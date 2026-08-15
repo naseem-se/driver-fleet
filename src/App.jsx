@@ -11,11 +11,17 @@ import { HistoryPage } from './pages/HistoryPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { JourneyCompletePage } from './pages/JourneyCompletePage';
 import { FuelPage } from './pages/FuelPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { EmailVerifiedPage } from './pages/EmailVerifiedPage';
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/email-verified" element={<EmailVerifiedPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<DriverLayout />}>
