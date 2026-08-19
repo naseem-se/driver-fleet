@@ -4,6 +4,9 @@ import { OfflineBanner } from '../components/OfflineBanner';
 import { UpdateBanner } from '../components/UpdateBanner';
 import clsx from 'clsx';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { useState, useEffect } from 'react';
+import { onSubscriptionIssue } from '../lib/subscriptionStatus';
+import { SubscriptionIssueScreen } from '../components/SubscriptionIssueScreen';
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home, end: true },
@@ -14,10 +17,16 @@ const navItems = [
 
 export function DriverLayout() {
   const location = useLocation();
+  const [subscriptionIssue, setSubscriptionIssue] = useState(null);
 
-  // Don't nudge a reload while the driver is mid-flow on odometer/fuel
-  // capture screens — a forced context switch there is actively disruptive,
-  // not just mildly annoying like it would be on Home or History.
+  useEffect(() => {
+    return onSubscriptionIssue(setSubscriptionIssue);
+  }, []);
+
+  if (subscriptionIssue) {
+    return <SubscriptionIssueScreen issue={subscriptionIssue} />;
+  }
+  
   const suppressUpdateBanner = ['/start-journey', '/end-journey', '/fuel-entry'].includes(location.pathname);
 
   return (

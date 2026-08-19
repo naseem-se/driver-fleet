@@ -4,6 +4,8 @@ import { Truck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { extractErrorMessage } from '../lib/apiClient';
 import { Loader } from '../components/Loader';
+import { apiClient } from '../lib/apiClient';
+import { clearSubscriptionIssue } from '../lib/subscriptionStatus';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -19,6 +21,14 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       await login(email, password);
+
+      clearSubscriptionIssue();
+      try {
+        await apiClient.get('/auth/subscription-check');
+      } catch {
+        // handled by the interceptor
+      }
+
       navigate('/', { replace: true });
     } catch (err) {
       setError(extractErrorMessage(err));

@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { apiClient } from '../lib/apiClient';
 import { queryClient } from '../lib/queryClient';
 import { registerPushNotifications } from '../lib/pushNotifications';
+import { clearSubscriptionIssue } from '../lib/subscriptionStatus';
 
 const AuthContext = createContext(undefined);
 const TOKEN_KEY = 'driver_auth_token';
@@ -29,12 +30,11 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
-    try {
-      await apiClient.post('/auth/logout');
-    } finally {
+    try { await apiClient.post('/auth/logout'); } finally {
       localStorage.removeItem(TOKEN_KEY);
       setUser(null);
-      queryClient.clear(); // don't leave this driver's data cached for whoever logs in next
+      clearSubscriptionIssue();
+      queryClient.clear();
     }
   }
 
