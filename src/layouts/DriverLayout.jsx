@@ -30,7 +30,7 @@ export function DriverLayout() {
   const suppressUpdateBanner = ['/start-journey', '/end-journey', '/fuel-entry'].includes(location.pathname);
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen min-h-dvh flex-col bg-gray-50">
       <OfflineBanner />
       {!suppressUpdateBanner && <UpdateBanner />}
 

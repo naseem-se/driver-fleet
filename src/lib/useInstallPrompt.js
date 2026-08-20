@@ -1,8 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
 
-const DISMISSED_KEY = 'fleet_driver_install_dismissed_at';
-const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // don't re-nag for a week after dismissal
-
 export function useInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
@@ -12,12 +9,9 @@ export function useInstallPrompt() {
 
   useEffect(() => {
     function handleBeforeInstallPrompt(e) {
-      e.preventDefault(); // stop the browser's own mini-infobar so we control timing
+      e.preventDefault();
       setDeferredPrompt(e);
-
-      const dismissedAt = Number(localStorage.getItem(DISMISSED_KEY) ?? 0);
-      const cooledDown = Date.now() - dismissedAt > DISMISS_COOLDOWN_MS;
-      setIsInstallable(cooledDown);
+      setIsInstallable(true);
     }
 
     function handleAppInstalled() {
@@ -39,14 +33,9 @@ export function useInstallPrompt() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     setDeferredPrompt(null);
-    setIsInstallable(false);
-    return outcome; // 'accepted' | 'dismissed'
+    setIsInstallable(outcome !== 'accepted');
+    return outcome;
   }, [deferredPrompt]);
 
-  const dismiss = useCallback(() => {
-    localStorage.setItem(DISMISSED_KEY, String(Date.now()));
-    setIsInstallable(false);
-  }, []);
-
-  return { isInstallable, isInstalled, promptInstall, dismiss };
+  return { isInstallable, isInstalled, promptInstall };
 }

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { QrCode, Gauge, Clock, CloudOff, RefreshCw } from 'lucide-react';
@@ -10,15 +10,25 @@ import { PullToRefreshIndicator } from '../components/PullToRefreshIndicator';
 import { InstallBanner } from '../components/InstallBanner';
 import { FullPageLoader } from '../components/Loader';
 import { useAuth } from '../context/AuthContext';
+import { InstallModal } from '../components/InstallModal';
+import { useInstallPrompt } from '../lib/useInstallPrompt';
 
 export function HomePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [scanning, setScanning] = useState(false);
   const handledRef = useRef(false);
+  const { isInstalled } = useInstallPrompt();
+  const [showInstallModal, setShowInstallModal] = useState(false);
 
   const { data: currentJourney, isLoading, refetch, isFetching } = useCurrentJourney();
   const { pullDistance, refreshing } = usePullToRefresh(refetch);
+
+  useEffect(() => {
+    if (!isInstalled) {
+      setShowInstallModal(true);
+    }
+  }, [isInstalled]);
 
   async function handleScan(qrToken) {
     if (handledRef.current) return; // page-level guard, on top of QrScanner's own lock
@@ -90,6 +100,7 @@ export function HomePage() {
       )}
 
       {scanning && <QrScanner onScan={handleScan} onClose={() => setScanning(false)} />}
+      {showInstallModal && <InstallModal onClose={() => setShowInstallModal(false)} />}
     </div>
   );
 }

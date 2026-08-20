@@ -6,6 +6,7 @@ import { extractErrorMessage } from '../lib/apiClient';
 import { Loader } from '../components/Loader';
 import { apiClient } from '../lib/apiClient';
 import { clearSubscriptionIssue } from '../lib/subscriptionStatus';
+import { InstallButton } from '../components/InstallButton';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -71,6 +72,7 @@ export function LoginPage() {
           {submitting && <Loader size="sm" className="border-white/40 border-t-white" />}
           {submitting ? 'Signing in...' : 'Sign In'}
         </button>
+        <InstallButton />
       </form>
     </div>
   );
